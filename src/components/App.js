@@ -1,15 +1,46 @@
-// Файл App.js — корневой компонент приложения. О нём поговорим чуть позже.
+// Файл App.js — корневой компонент приложения.
 
-import React from "react";
+import React, { useState } from "react";
 import Header from "./Header";
 import Main from "./Main";
 import Footer from "./Footer";
 import PopupWithForm from "./PopupWithForm";
 import ImagePopup from "./ImagePopup";
-// import logo from './logo.svg';
-// import "../index.css";
+
 
 function App() {
+  // Объявляем новые переменные состояния попапов. 
+  // Аргумент useState — это начальное состояние. 
+  // Вызов useState возвращает массив с двумя элементами, который содержит: 
+  // текущее значение состояния и функцию-сеттер для его обновления. 
+  const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
+  const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
+  const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
+   
+//   const [selectedCard, setSelectedCard] = React.useState({});
+
+
+// открытие попов используя Хук состояния
+function handleEditProfileClick(){
+  setIsEditProfilePopupOpen(true)
+}
+
+function handleAddPlaceClick() {
+  setIsAddPlacePopupOpen(true);
+}
+
+function handleEditAvatarClick() {
+  setIsEditAvatarPopupOpen(true)
+}
+
+//закрытие попапов
+function closeAllPopups() {
+  setIsEditProfilePopupOpen(false)
+  setIsEditAvatarPopupOpen(false)
+  setIsAddPlacePopupOpen(false)
+  // setSelectedCard(null);
+}
+
 
 
   return (
@@ -17,16 +48,20 @@ function App() {
       <div className="page__container">
         <Header />
         <Main 
-          
+          onEditProfile={handleEditProfileClick}
+          onEditAvatar={handleEditAvatarClick}
+          onAddPlace={handleAddPlaceClick}
+          // onCardClick={setSelectedCard}
         />
-        <ImagePopup  />
+        <ImagePopup /*card={selectedCard}*/  onClose={closeAllPopups}/>
         <Footer />
 
         <PopupWithForm
           name="update-avatar"
           title="Обновить аватар"
           btnText="Сохранить"
-          
+          isOpen={isEditAvatarPopupOpen}
+          onClose={closeAllPopups}
 
           children={
             <>
@@ -47,7 +82,8 @@ function App() {
           name="edit"
           title="Редактировать профиль"
           btnText="Сохранить"
-          
+          isOpen={isEditProfilePopupOpen}
+          onClose={closeAllPopups}
 
           children={
             <>
@@ -85,7 +121,8 @@ function App() {
           name="add"
           title="Новое место"
           btnText="Создать"
-         
+          isOpen={isAddPlacePopupOpen}
+          onClose={closeAllPopups}
 
           children={
             <>
