@@ -7,62 +7,68 @@ import Footer from "./Footer";
 import PopupWithForm from "./PopupWithForm";
 import ImagePopup from "./ImagePopup";
 
-
 function App() {
-  // Объявляем новые переменные состояния попапов. 
-  // Аргумент useState — это начальное состояние. 
-  // Вызов useState возвращает массив с двумя элементами, который содержит: 
-  // текущее значение состояния и функцию-сеттер для его обновления. 
+  // Объявляем новые переменные состояния попапов.
+  // Аргумент useState — это начальное состояние.
+  // Вызов useState возвращает массив с двумя элементами, который содержит:
+  // текущее значение состояния и функцию-сеттер для его обновления.
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
-   
-//   const [selectedCard, setSelectedCard] = React.useState({});
 
+  const [selectedCard, setSelectedCard] = useState({});
 
-// открытие попов используя Хук состояния
-function handleEditProfileClick(){
-  setIsEditProfilePopupOpen(true)
-}
+  // открытие полноразмерной картинки
+  // function handleCardClick(card) {
+  //   setSelectedCard({
+  //     isOpen: false
+  //   })
+  // }
 
-function handleAddPlaceClick() {
-  setIsAddPlacePopupOpen(true);
-}
+  // открытие попапов используя Хук состояния
+  function handleEditProfileClick() {
+    setIsEditProfilePopupOpen(true);
+  }
 
-function handleEditAvatarClick() {
-  setIsEditAvatarPopupOpen(true)
-}
+  function handleAddPlaceClick() {
+    setIsAddPlacePopupOpen(true);
+  }
 
-//закрытие попапов
-function closeAllPopups() {
-  setIsEditProfilePopupOpen(false)
-  setIsEditAvatarPopupOpen(false)
-  setIsAddPlacePopupOpen(false)
-  // setSelectedCard(null);
-}
+  function handleEditAvatarClick() {
+    setIsEditAvatarPopupOpen(true);
+  }
 
-
+  //закрытие попапов
+  function closeAllPopups() {
+    setIsEditProfilePopupOpen(false);
+    setIsEditAvatarPopupOpen(false);
+    setIsAddPlacePopupOpen(false);
+    setSelectedCard({});
+  }
 
   return (
     <div className="page">
       <div className="page__container">
         <Header />
-        <Main 
+        <Main
           onEditProfile={handleEditProfileClick}
           onEditAvatar={handleEditAvatarClick}
           onAddPlace={handleAddPlaceClick}
-          // onCardClick={setSelectedCard}
+          onCardClick={setSelectedCard}
         />
-        <ImagePopup /*card={selectedCard}*/  onClose={closeAllPopups}/>
-        <Footer />
 
+        <Footer />
+        
+        <ImagePopup
+          card={selectedCard}
+          onClose={closeAllPopups}
+        />
         <PopupWithForm
           name="update-avatar"
           title="Обновить аватар"
           btnText="Сохранить"
           isOpen={isEditAvatarPopupOpen}
           onClose={closeAllPopups}
-
           children={
             <>
               <input
@@ -84,7 +90,6 @@ function closeAllPopups() {
           btnText="Сохранить"
           isOpen={isEditProfilePopupOpen}
           onClose={closeAllPopups}
-
           children={
             <>
               <label className="popup__label">
@@ -123,7 +128,6 @@ function closeAllPopups() {
           btnText="Создать"
           isOpen={isAddPlacePopupOpen}
           onClose={closeAllPopups}
-
           children={
             <>
               <label className="popup__label">
