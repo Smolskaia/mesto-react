@@ -1,28 +1,32 @@
-import React, { useState, useEffect } from "react";
-import { api } from "../utils/api";
+import React, { useContext } from "react";
+// import { api } from "../utils/api";
 import Card from "./Card";
+import { CurrentUserContext } from "../contexts/CurrentUserContext";
 
 function Main(props) {
-  const { onEditProfile, onAddPlace, onEditAvatar, onCardClick } = props;
+  const { cards, onEditProfile, onAddPlace, onEditAvatar, onCardClick, onCardLike, onCardDelete } = props;
 
-  // Объявляем новые переменные состояния данных пользователя
-  const [userName, setUserName] = useState("");
-  const [userDescription, setUserDescription] = useState("");
-  const [userAvatar, setUserAvatar] = useState("");
+  // контекст пользователя
+  const currentUser = useContext(CurrentUserContext);
 
-  // Объявляем переменную состояния массива карточек
-  const [cards, setCards] = useState([]);
+  // // Объявляем новые переменные состояния данных пользователя
+  // const [userName, setUserName] = useState("");
+  // const [userDescription, setUserDescription] = useState("");
+  // const [userAvatar, setUserAvatar] = useState("");
+
+  // // Объявляем переменную состояния массива карточек
+  // const [cards, setCards] = useState([]);
   
-  useEffect(() => {
-  Promise.all([api.getUserInfo(),  api.getInitialCards()])
-    .then(([userData, cards])=> {
-      setUserName(userData.name);
-      setUserDescription(userData.about);
-      setUserAvatar(userData.avatar);
-      setCards(cards);
-    })
-    .catch((err) => console.log(err));
-  }, []);
+  // useEffect(() => {
+  // Promise.all([api.getUserInfo(),  api.getInitialCards()])
+  //   .then(([userData, cards])=> {
+  //     setUserName(userData.name);
+  //     setUserDescription(userData.about);
+  //     setUserAvatar(userData.avatar);
+  //     setCards(cards);
+  //   })
+  //   .catch((err) => console.log(err));
+  // }, []);
   
   // useEffect(() => {
   //   api
@@ -35,10 +39,9 @@ function Main(props) {
   //     })
   //     .catch((err) => console.log(err));
 
-  //   api
-  //     .getInitialCards()
+  //   api.getInitialCards()
   //     .then((res) => {
-  //       console.log("res =>", res);
+  //       // console.log("res =>", res);
   //       setCards(res);
   //     })
   //     .catch((err) => console.log(err));
@@ -64,7 +67,7 @@ function Main(props) {
         <div className="profile__wrapper-avatar">
           <img
             className="profile__avatar"
-            src={userAvatar}
+            src={currentUser.avatar}
             alt="Аватар профиля"
           />
           <button
@@ -74,7 +77,7 @@ function Main(props) {
           ></button>
         </div>
         <div className="profile__info">
-          <h1 className="profile__name">{userName}</h1>
+          <h1 className="profile__name">{currentUser.name}</h1>
           <button
             onClick={onEditProfile}
             className="profile__btn-edit"
@@ -82,7 +85,7 @@ function Main(props) {
             title="Редактировать профиль"
             aria-label="Редактировать профиль"
           ></button>
-          <p className="profile__about">{userDescription}</p>
+          <p className="profile__about">{currentUser.about}</p>
         </div>
         <button
           onClick={onAddPlace}
@@ -99,10 +102,11 @@ function Main(props) {
             <Card
               card={card}
               key={card._id}
-              title={card.name}
-              image={card.link}
+              currentUser={currentUser._id}
               likesCount={card.likes.length}
               onCardClick={onCardClick}
+              onCardDelete={onCardDelete}
+              onCardLike={onCardLike}
             />
           ))}
         </ul>
