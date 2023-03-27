@@ -8,6 +8,7 @@ import PopupWithForm from "./PopupWithForm";
 import ImagePopup from "./ImagePopup";
 import { api } from "../utils/api";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
+import EditProfilePopup from "./EditProfilePopup";
 
 function App() {
   // Объявляем новые переменные состояния попапов.
@@ -80,13 +81,24 @@ function App() {
 
   // удаление карточки
   function handleCardDelete(card) {
-    api.deleteCard(card._id)
+    api
+      .deleteCard(card._id)
       .then(() =>
-        setCards((state) => 
-          state.filter((item) => item._id !== card._id))
+        setCards((state) => state.filter((item) => item._id !== card._id))
       )
       .catch((err) => console.log(err));
   }
+// изменение данных пользователя
+  function handleUpdateUser(inputData) {
+    api.setUserInfo(inputData)
+    .then((res) => {
+      // console.log('setUserInfo =>', res);
+      setCurrentUser(res);
+      closeAllPopups();
+    })
+    .catch((err) => console.log(err));
+  }
+
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
@@ -130,7 +142,12 @@ function App() {
             }
           />
 
-          <PopupWithForm
+          <EditProfilePopup
+            isOpen={isEditProfilePopupOpen}
+            onClose={closeAllPopups}
+            onUpdateUser={handleUpdateUser}
+          />
+          {/* <PopupWithForm
             name="edit"
             title="Редактировать профиль"
             btnText="Сохранить"
@@ -166,7 +183,7 @@ function App() {
                 </label>
               </>
             }
-          />
+          /> */}
 
           <PopupWithForm
             name="add"

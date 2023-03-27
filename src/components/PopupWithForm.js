@@ -10,7 +10,7 @@
 import React from "react";
 
 function PopupWithForm(props) {
-  const { name, title, children, btnText, isOpen, onClose } = props;
+  const { name, title, children, btnText, isOpen, onClose, onSubmit } = props;
   return (
     <div className={`popup popup_form_${name} ${isOpen ? "popup_opened" : ""}`}>
       <div className="popup__container">
@@ -23,13 +23,14 @@ function PopupWithForm(props) {
         <form
           name={name}
           className="popup__form"
+          onSubmit={onSubmit}
         >
           {children}
 
           <button
             name="submitForm"
             type="submit"
-            className="popup__btn-save popup__btn-save_disabled"
+            className="popup__btn-save"
           >
             {btnText}
           </button>
