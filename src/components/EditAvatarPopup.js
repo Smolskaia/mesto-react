@@ -2,7 +2,7 @@ import { useRef } from "react";
 import PopupWithForm from "./PopupWithForm";
 
 function EditAvatarPopup(props) {
-  const { isOpen, onClose, onUpdateAvatar } = props;
+  const { isOpen, onClose, onUpdateAvatar, onLoading } = props;
   const avatarRef = useRef(); // записываем объект, возвращаемый хуком, в переменную
 
   function handleSubmit(evt) {
@@ -18,7 +18,7 @@ function EditAvatarPopup(props) {
     <PopupWithForm
       name="update-avatar"
       title="Обновить аватар"
-      btnText="Сохранить"
+      btnText={onLoading ? `Сохранение...` : `Сохранить`}
       isOpen={isOpen}
       onClose={onClose}
       onSubmit={handleSubmit}

@@ -5,6 +5,7 @@ import Header from "./Header";
 import Main from "./Main";
 import Footer from "./Footer";
 import ImagePopup from "./ImagePopup";
+import PopupWithForm from "./PopupWithForm";
 import { api } from "../utils/api";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import EditProfilePopup from "./EditProfilePopup";
@@ -62,20 +63,51 @@ function App() {
     setSelectedCard({});
   }
 
+  // Создаем переменную isOpen снаружи useEffect, в которой следим за всеми состояниями попапов.
+  const isOpen = isEditAvatarPopupOpen || isEditProfilePopupOpen || isAddPlacePopupOpen || selectedCard.link
+
+  useEffect(() => {
+    /* Объявляем функцию внутри useEffect, 
+    чтобы она не теряла свою ссылку при обновлении компонента. */
+    function closeByEscape(evt) {
+      if(evt.key === 'Escape') {
+        closeAllPopups();
+      }
+    }
+    
+    /* Если хоть одно состояние isOpen true или не null, 
+    то какой-то попап открыт, значит, нужно навешивать обработчик. */
+    if(isOpen) { // навешиваем только при открытии
+      document.addEventListener('keydown', closeByEscape);
+    /*удаляем обработчик в clean up функции через return */  
+      return () => {
+        document.removeEventListener('keydown', closeByEscape);
+      }
+    }
+  }, [isOpen]) /*массив зависимостей c isOpen, чтобы отслеживать изменение 
+  этого показателя открытости. Как только он становится true, 
+  то навешивается обработчик, когда в false, тогда удаляется обработчик.*/
+  
+  /*переменная для отслеживания состояния загрузки во время 
+  ожидания ответа от сервера*/
+  const [isLoading, setIsLoading] = React.useState(false);
+
   // лайк
   function handleCardLike(card) {
     // проверяем, есть ли уже лайк на этой карточке
     const isLiked = card.likes.some((user) => user._id === currentUser._id);
 
     // Отправляем запрос в API и получаем обновлённые данные карточки
-    api.changeLikeCardStatus(card._id, !isLiked).then((newCard) => {
+    api.changeLikeCardStatus(card._id, !isLiked)
+      .then((newCard) => {
       // меняем стейт карточек. Поочередно сравниваем id каждой карточки с id карточки
       // на которой нажали лайк, если id совпадают, тогда обновить карточку с метода api
       // если нет - оставь текущущую карточку
       setCards((state) =>
         state.map((item) => (item._id === card._id ? newCard : item))
       );
-    });
+    })
+    .catch((err) => console.log(err));
   }
 
   // удаление карточки
@@ -88,32 +120,38 @@ function App() {
   }
   // изменение данных пользователя
   function handleUpdateUser(inputData) {
+    setIsLoading(true);
     api.setUserInfo(inputData)
       .then((res) => {
         setCurrentUser(res);
         closeAllPopups();
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.log(err))
+      .finally(() => setIsLoading(false));
   }
 
   // изменение аватара
   function handleUpdateAvatar(inputData) {
+    setIsLoading(true);
     api.setAvatar(inputData)
       .then((res) => {
         setCurrentUser(res);
         closeAllPopups();
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.log(err))
+      .finally(() => setIsLoading(false));
   }
 
   // добавление карточки
   function handleAddPlaceSubmit(inputData) {
+    setIsLoading(true);
     api.addNewCard(inputData)
-    .then((res) => {
-      setCards([res, ...cards]);
-      closeAllPopups();
-    })
-    .catch((err) => console.log(err));
+      .then((res) => {
+        setCards([res, ...cards]);
+        closeAllPopups();
+      })
+      .catch((err) => console.log(err))
+      .finally(() => setIsLoading(false));
   }
 
   return (
@@ -142,20 +180,29 @@ function App() {
             isOpen={isEditAvatarPopupOpen}
             onClose={closeAllPopups}
             onUpdateAvatar={handleUpdateAvatar}
+            onLoading={isLoading}
           />
 
           <EditProfilePopup
             isOpen={isEditProfilePopupOpen}
             onClose={closeAllPopups}
             onUpdateUser={handleUpdateUser}
+            onLoading={isLoading}
           />
-          
+
           <AddPlacePopup
             isOpen={isAddPlacePopupOpen}
             onClose={closeAllPopups}
             onAddPlace={handleAddPlaceSubmit}
+            onLoading={isLoading}
           />
-          
+
+          <PopupWithForm
+            name="delete-confirmation"
+            title="Вы уверены?"
+            btnText="Да"
+          />
+
         </div>
       </div>
     </CurrentUserContext.Provider>

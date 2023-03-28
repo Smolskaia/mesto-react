@@ -3,7 +3,7 @@ import PopupWithForm from "./PopupWithForm";
 
 
 function AddPlacePopup(props) {
-  const { isOpen, onClose, onAddPlace } = props;
+  const { isOpen, onClose, onAddPlace, onLoading } = props;
 
   const [namePlace, setNamePlace] = useState('');
   const [linkPlace, setLinkPlace] = useState('');
@@ -35,7 +35,7 @@ function AddPlacePopup(props) {
     <PopupWithForm
             name="add"
             title="Новое место"
-            btnText="Создать"
+            btnText={onLoading ? `Сохранение...` : `Создать`}
             isOpen={isOpen}
             onClose={onClose}
             onSubmit={handleSubmit}
