@@ -9,6 +9,7 @@ import ImagePopup from "./ImagePopup";
 import { api } from "../utils/api";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import EditProfilePopup from "./EditProfilePopup";
+import EditAvatarPopup from "./EditAvatarPopup";
 
 function App() {
   // Объявляем новые переменные состояния попапов.
@@ -88,17 +89,27 @@ function App() {
       )
       .catch((err) => console.log(err));
   }
-// изменение данных пользователя
+  // изменение данных пользователя
   function handleUpdateUser(inputData) {
     api.setUserInfo(inputData)
-    .then((res) => {
-      // console.log('setUserInfo =>', res);
-      setCurrentUser(res);
-      closeAllPopups();
-    })
-    .catch((err) => console.log(err));
+      .then((res) => {
+        // console.log('setUserInfo =>', res);
+        setCurrentUser(res);
+        closeAllPopups();
+      })
+      .catch((err) => console.log(err));
   }
 
+  // изменение аватара
+  function handleUpdateAvatar(inputData) {
+    api.setAvatar(inputData)
+      .then((res) => {
+         console.log('setAvatar =>', res);
+        setCurrentUser(res);
+        closeAllPopups();
+      })
+      .catch((err) => console.log(err));
+  }
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
@@ -121,7 +132,13 @@ function App() {
             card={selectedCard}
             onClose={closeAllPopups}
           />
-          <PopupWithForm
+
+          <EditAvatarPopup
+            isOpen={isEditAvatarPopupOpen}
+            onClose={closeAllPopups}
+            onUpdateAvatar={handleUpdateAvatar}
+          />
+          {/* <PopupWithForm
             name="update-avatar"
             title="Обновить аватар"
             btnText="Сохранить"
@@ -140,7 +157,7 @@ function App() {
                 <span className="url-avatar-image-error popup__input-error"></span>
               </>
             }
-          />
+          /> */}
 
           <EditProfilePopup
             isOpen={isEditProfilePopupOpen}
