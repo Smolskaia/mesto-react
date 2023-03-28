@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import Header from "./Header";
 import Main from "./Main";
 import Footer from "./Footer";
-import PopupWithForm from "./PopupWithForm";
 import ImagePopup from "./ImagePopup";
 import { api } from "../utils/api";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
@@ -65,7 +64,7 @@ function App() {
 
   // лайк
   function handleCardLike(card) {
-    // Снова проверяем, есть ли уже лайк на этой карточке
+    // проверяем, есть ли уже лайк на этой карточке
     const isLiked = card.likes.some((user) => user._id === currentUser._id);
 
     // Отправляем запрос в API и получаем обновлённые данные карточки
@@ -157,11 +156,6 @@ function App() {
             onAddPlace={handleAddPlaceSubmit}
           />
           
-          <PopupWithForm
-            name="delete-confirmation"
-            title="Вы уверены?"
-            btnText="Да"
-          />
         </div>
       </div>
     </CurrentUserContext.Provider>
