@@ -5,7 +5,7 @@ import Header from "./Header";
 import Main from "./Main";
 import Footer from "./Footer";
 import ImagePopup from "./ImagePopup";
-import PopupWithForm from "./PopupWithForm";
+// import PopupWithForm from "./PopupWithForm";
 import { api } from "../utils/api";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import EditProfilePopup from "./EditProfilePopup";
@@ -197,11 +197,11 @@ function App() {
             onLoading={isLoading}
           />
 
-          <PopupWithForm
+          {/* <PopupWithForm
             name="delete-confirmation"
             title="Вы уверены?"
             btnText="Да"
-          />
+          /> */}
 
         </div>
       </div>

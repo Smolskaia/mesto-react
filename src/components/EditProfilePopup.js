@@ -1,13 +1,17 @@
 import React, { useState, useEffect, useContext } from "react";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import PopupWithForm from "./PopupWithForm";
+import { useFormValidation } from "../utils/useFormValidation";
 
 function EditProfilePopup(props) {
   const { isOpen, onClose, onUpdateUser, onLoading } = props;
 
   //переменные состояния name и description
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  // const [name, setName] = useState("");
+  // const [description, setDescription] = useState("");
+  
+  //вызываем хук валидации
+  const { values, errors, isValid, handleChange, setValue, reset, setIsValid  } =useFormValidation() 
 
   // Подписка на контекст
   const currentUser = useContext(CurrentUserContext);
@@ -15,26 +19,40 @@ function EditProfilePopup(props) {
   // После загрузки текущего пользователя из API
   // его данные будут использованы в управляемых компонентах.
   useEffect(() => {
-    setName(currentUser.name);
-    setDescription(currentUser.about);
-  }, [currentUser, isOpen]);
+    // setName(currentUser.name);
+    // setDescription(currentUser.about);
+    if (currentUser) {
+      setValue('name', currentUser.name)
+      setValue('info', currentUser.about)
+      if (currentUser.name && currentUser.about) {
+        setIsValid(true)
+      }
+    } 
+  }, [currentUser, isOpen, setValue]);
 
-  function handleName(evt) {
-    setName(evt.target.value);
-  }
+  // function handleName(evt) {
+  //   setName(evt.target.value);
+  // }
 
-  function handleDescription(evt) {
-    setDescription(evt.target.value);
-  }
+  // function handleDescription(evt) {
+  //   setDescription(evt.target.value);
+  // }
 
   function handleSubmit(evt) {
     // Запрещаем браузеру переходить по адресу формы
     evt.preventDefault();
     // Передаём значения управляемых компонентов во внешний обработчик
     onUpdateUser({
-      name,
-      about: description,
+      name: values['name'],
+      about: values['info'],
     });
+  }
+
+  const errorClassName = (name) => `popup__input-error ${errors[name] ? 'popup__input-error_active' : ''}`
+
+  const onClosePopup = () => {
+    onClose()
+    reset({ 'name': currentUser.name, 'info': currentUser.about }, true)
   }
 
   return (
@@ -43,8 +61,9 @@ function EditProfilePopup(props) {
       title="Редактировать профиль"
       btnText={onLoading ? `Сохранение...` : `Сохранить`}
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={onClosePopup}
       onSubmit={handleSubmit}
+      isValid={isValid}
       children={
         <>
           <label className="popup__label">
@@ -57,10 +76,10 @@ function EditProfilePopup(props) {
               required
               minLength="2"
               maxLength="40"
-              onChange={handleName}
-              value={name || ""}
+              onChange={handleChange} //{handleName} 
+              value={values['name'] ?? ""}
             />
-            <span className="username-error popup__input-error"></span>
+            <span className={errorClassName('name')}>{errors['name']}</span>
           </label>
           <label className="popup__label">
             <input
@@ -72,10 +91,10 @@ function EditProfilePopup(props) {
               required
               minLength="2"
               maxLength="200"
-              onChange={handleDescription}
-              value={description || ""}
+              onChange={handleChange} //{handleDescription}
+              value={values['info'] ?? ""}
             />
-            <span className="profile-info-error popup__input-error"></span>
+            <span className={errorClassName('info')}>{errors['info']}</span>
           </label>
         </>
       }

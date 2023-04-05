@@ -1,34 +1,52 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import PopupWithForm from "./PopupWithForm";
+import { useFormValidation } from "../utils/useFormValidation";
 
 
 function AddPlacePopup(props) {
   const { isOpen, onClose, onAddPlace, onLoading } = props;
 
-  const [namePlace, setNamePlace] = useState('');
-  const [linkPlace, setLinkPlace] = useState('');
+  // const [namePlace, setNamePlace] = useState('');
+  // const [linkPlace, setLinkPlace] = useState('');
+
+  //вызываем хук валидации
+  const { values, errors, isValid, handleChange, setValue, reset, setIsValid } =useFormValidation()
 
   useEffect(() => {
-    setNamePlace('');
-    setLinkPlace('');
-  }, [isOpen]);
+    // setNamePlace('');
+    // setLinkPlace('');
+    setValue('name', values[''])
+    setValue('link', values[''])
+    if (values['name'] && values['link']) {
+      setIsValid(false)
+    }
+  }, [isOpen, setValue]);
 
   function handleSubmit(evt) {
     // Запрещаем браузеру переходить по адресу формы
     evt.preventDefault();
     // Передаём значения управляемых компонентов во внешний обработчик
     onAddPlace({
-      name: namePlace,
-      link: linkPlace
+      // name: namePlace,
+      // link: linkPlace
+      name: values['name'],
+      link: values['link']
     });
   }
 
-  function handleChangeNamePlace(evt) {
-    setNamePlace(evt.target.value);
-  }
+  // function handleChangeNamePlace(evt) {
+  //   setNamePlace(evt.target.value);
+  // }
 
-  function handleChangeLinkPlace(evt) {
-    setLinkPlace(evt.target.value);
+  // function handleChangeLinkPlace(evt) {
+  //   setLinkPlace(evt.target.value);
+  // }
+
+  const errorClassName = (name) => `popup__input-error ${errors[name] ? 'popup__input-error_active' : ''}`
+
+  const onClosePopup = () => {
+    onClose()
+    reset()
   }
 
   return (
@@ -37,13 +55,14 @@ function AddPlacePopup(props) {
             title="Новое место"
             btnText={onLoading ? `Сохранение...` : `Создать`}
             isOpen={isOpen}
-            onClose={onClose}
+            onClose={onClosePopup}
             onSubmit={handleSubmit}
+            isValid={isValid}
             children={
               <>
                 <label className="popup__label">
                   <input
-                    onChange={handleChangeNamePlace}
+                    onChange={handleChange} //{handleChangeNamePlace}
                     name="name"
                     id="image-name"
                     type="text"
@@ -52,22 +71,22 @@ function AddPlacePopup(props) {
                     required
                     minLength="2"
                     maxLength="30"
-                    value={namePlace || ""}
+                    value={values['name'] ?? ""}
                   />
-                  <span className="image-name-error popup__input-error"></span>
+                  <span className={errorClassName('name')}>{errors['name']}</span>
                 </label>
                 <label className="popup__label">
                   <input
-                    onChange={handleChangeLinkPlace}
+                    onChange={handleChange} //{handleChangeLinkPlace}
                     name="link"
                     id="url-image"
                     type="url"
                     placeholder="Ссылка на картинку"
                     className="popup__input popup__input_text_info"
                     required
-                    value={linkPlace || ""}
+                    value={values['link'] ?? ""}
                   />
-                  <span className="url-image-error popup__input-error"></span>
+                  <span className={errorClassName('link')}>{errors['link']}</span>
                 </label>
               </>
             }
